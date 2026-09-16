@@ -73,7 +73,6 @@ def pagina():
 @app.get("/api/status")
 def status():
     try:
-        db.apply_schema()
         return {
             "sources": [
                 {"source_type": tipo, "source_name": nome, "chunks": total}

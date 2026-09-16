@@ -68,7 +68,6 @@ def command_serve(args):
 
 
 def command_status(args):
-    db.apply_schema()
     rows = db.counts()
     if not rows:
         print("base vazia: rode 'ingest srd' primeiro")
