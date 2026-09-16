@@ -1,0 +1,717 @@
+<!DOCTYPE html>
+<html lang="pt-BR" data-tema="claro">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>MedievaIA</title>
+<link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24'%3E%3Cpath fill='%238a2b2f' d='M12 1.4 2.8 5v6.8c0 5.4 3.8 9.4 9.2 10.8 5.4-1.4 9.2-5.4 9.2-10.8V5z'/%3E%3Cpath fill='%23fbf7ee' d='M12 7 17.1 16.2H6.9z'/%3E%3C/svg%3E">
+<meta name="theme-color" content="#8a2b2f">
+<style>
+  :root[data-tema="claro"] {
+    --fundo: #e7ddc9;
+    --superficie: #fbf7ee;
+    --superficie-2: #f2ebdb;
+    --realce: #fffdf8;
+    --borda: #d5c7a9;
+    --borda-forte: #b6a57f;
+    --texto: #221b11;
+    --texto-medio: #5b4f3d;
+    --texto-fraco: #8a7c65;
+    --marca: #8a2b2f;
+    --marca-viva: #a83f38;
+    --marca-solida: #8a2b2f;
+    --marca-solida-hover: #a1332f;
+    --marca-contraste: #fbf7ee;
+    --ouro: #a8791a;
+    --oficial: #2c4d70;
+    --oficial-fundo: #dde7f1;
+    --casa: #90500f;
+    --casa-fundo: #f7e5cd;
+    --sombra: 0 1px 2px rgba(60,45,20,.07), 0 4px 14px rgba(60,45,20,.06);
+    --sombra-forte: 0 2px 6px rgba(60,45,20,.12), 0 12px 32px rgba(60,45,20,.10);
+  }
+  :root[data-tema="escuro"] {
+    --fundo: #15110d;
+    --superficie: #211b14;
+    --superficie-2: #2a2219;
+    --realce: #332a1f;
+    --borda: #3b3127;
+    --borda-forte: #564939;
+    --texto: #f1e8d8;
+    --texto-medio: #bbad97;
+    --texto-fraco: #897b66;
+    --marca: #d2695f;
+    --marca-viva: #e58479;
+    --marca-solida: #8c332c;
+    --marca-solida-hover: #a33f35;
+    --marca-contraste: #fdeeeb;
+    --ouro: #d6ab4e;
+    --oficial: #8fb8de;
+    --oficial-fundo: #1b2c3d;
+    --casa: #e0a35c;
+    --casa-fundo: #3a2a16;
+    --sombra: 0 1px 2px rgba(0,0,0,.4), 0 4px 14px rgba(0,0,0,.3);
+    --sombra-forte: 0 2px 8px rgba(0,0,0,.5), 0 14px 34px rgba(0,0,0,.45);
+  }
+
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+
+  body {
+    background: var(--fundo);
+    color: var(--texto);
+    font: 17px/1.65 "Iowan Old Style", "Palatino Linotype", Palatino, Georgia, serif;
+    height: 100vh;
+    display: flex;
+    flex-direction: column;
+    overflow: hidden;
+    transition: background .25s, color .25s;
+  }
+  .sans { font-family: system-ui, -apple-system, "Segoe UI", sans-serif; }
+  .folha { width: 100%; max-width: 780px; margin: 0 auto; padding: 0 36px; }
+
+  /* ---------- cabecalho ---------- */
+  header {
+    background: var(--superficie);
+    border-bottom: 1px solid var(--borda-forte);
+    box-shadow: var(--sombra);
+    padding: 16px 0;
+    flex-shrink: 0;
+    z-index: 5;
+  }
+  .masthead { display: flex; align-items: center; gap: 14px; }
+  .brasao {
+    width: 40px; height: 40px;
+    flex-shrink: 0;
+    color: var(--marca);
+  }
+  .titulos h1 { font-size: 25px; font-weight: 600; letter-spacing: .4px; line-height: 1.1; }
+  .titulos h1 em { font-style: normal; color: var(--marca); }
+  .titulos p {
+    font: italic 12.5px/1.3 "Iowan Old Style", Georgia, serif;
+    color: var(--texto-fraco);
+    margin-top: 1px;
+  }
+  .direita-header { margin-left: auto; display: flex; align-items: center; gap: 16px; }
+  .corpus {
+    font: 10.5px/1.45 system-ui, sans-serif;
+    letter-spacing: .9px;
+    text-transform: uppercase;
+    color: var(--texto-fraco);
+    text-align: right;
+  }
+  .corpus b { color: var(--texto-medio); font-weight: 700; font-size: 12px; }
+  .corpus .falha { color: var(--marca); }
+
+  .icone-botao {
+    width: 38px; height: 38px;
+    display: grid; place-items: center;
+    background: var(--superficie-2);
+    border: 1px solid var(--borda);
+    border-radius: 9px;
+    color: var(--texto-medio);
+    cursor: pointer;
+    transition: .18s;
+  }
+  .icone-botao:hover { border-color: var(--marca); color: var(--marca); transform: translateY(-1px); }
+  .icone-botao svg { width: 18px; height: 18px; }
+  :root[data-tema="claro"] .lua { display: block; }
+  :root[data-tema="claro"] .sol { display: none; }
+  :root[data-tema="escuro"] .lua { display: none; }
+  :root[data-tema="escuro"] .sol { display: block; }
+
+  /* ---------- corpo ---------- */
+  main { flex: 1; overflow-y: auto; min-height: 0; padding: 30px 0 36px; display: flex; }
+  .fluxo { display: flex; flex-direction: column; gap: 26px; width: 100%; }
+  .fluxo.inicial { justify-content: center; margin-top: -3vh; }
+
+  .abertura { text-align: center; }
+  .filete { width: 58px; height: 2px; background: var(--marca); margin: 0 auto 18px; border-radius: 2px; }
+  .abertura h2 { font-size: 26px; font-weight: 600; margin-bottom: 9px; }
+  .abertura > p { color: var(--texto-medio); max-width: 470px; margin: 0 auto; font-size: 15.5px; }
+
+  .rotulo {
+    font: 700 10.5px/1 system-ui, sans-serif;
+    letter-spacing: 1.5px;
+    text-transform: uppercase;
+    color: var(--texto-fraco);
+    display: flex; align-items: center; gap: 12px;
+    margin-bottom: 13px;
+  }
+  .rotulo::after { content: ""; flex: 1; height: 1px; background: var(--borda); }
+
+  .grade-sugestoes {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 10px;
+    margin-top: 28px;
+    text-align: left;
+  }
+  .sugestao {
+    display: flex; align-items: center; gap: 11px;
+    background: var(--superficie);
+    border: 1px solid var(--borda);
+    border-radius: 11px;
+    padding: 14px 15px;
+    font: inherit; font-size: 15px;
+    color: var(--texto);
+    cursor: pointer;
+    text-align: left;
+    box-shadow: var(--sombra);
+    transition: .18s;
+  }
+  .sugestao:hover {
+    border-color: var(--marca);
+    transform: translateY(-2px);
+    box-shadow: var(--sombra-forte);
+  }
+  .sugestao svg { width: 17px; height: 17px; color: var(--marca); flex-shrink: 0; }
+
+  .pergunta {
+    font-size: 21px; font-weight: 600; line-height: 1.35;
+    display: flex; align-items: flex-start; gap: 11px;
+  }
+  .pergunta svg { width: 19px; height: 19px; color: var(--marca); flex-shrink: 0; margin-top: 6px; }
+
+  .cartao {
+    background: var(--superficie);
+    border: 1px solid var(--borda);
+    border-radius: 13px;
+    box-shadow: var(--sombra);
+    overflow: hidden;
+  }
+  .fita {
+    display: flex; align-items: center; gap: 8px;
+    font: 700 10.5px/1 system-ui, sans-serif;
+    letter-spacing: 1.3px; text-transform: uppercase;
+    padding: 10px 16px;
+    border-bottom: 1px solid var(--borda);
+  }
+  .fita svg { width: 14px; height: 14px; }
+  .fita-rag { background: var(--marca-solida); color: var(--marca-contraste); border-bottom-color: var(--marca-solida); }
+  .fita-sem { background: var(--superficie-2); color: var(--texto-medio); }
+  .fita-erro { background: var(--marca-solida-hover); color: #fff; border-bottom-color: var(--marca-solida-hover); }
+  .texto-resposta { white-space: pre-wrap; padding: 17px 18px; }
+  .texto-resposta.erro { color: var(--marca); font: 15px/1.6 system-ui, sans-serif; }
+
+  .botao-comparar {
+    display: inline-flex; align-items: center; gap: 9px;
+    font: 700 11.5px/1 system-ui, sans-serif;
+    letter-spacing: .9px; text-transform: uppercase;
+    background: var(--superficie);
+    border: 1px solid var(--borda-forte);
+    color: var(--texto-medio);
+    padding: 11px 17px;
+    border-radius: 9px;
+    cursor: pointer;
+    box-shadow: var(--sombra);
+    transition: .18s;
+  }
+  .botao-comparar svg { width: 15px; height: 15px; }
+  .botao-comparar:hover {
+    border-color: var(--marca); color: var(--marca);
+    transform: translateY(-1px); box-shadow: var(--sombra-forte);
+  }
+  .botao-comparar:disabled { opacity: .5; cursor: default; transform: none; }
+
+  /* ---------- referencias ---------- */
+  .referencia {
+    background: var(--superficie);
+    border: 1px solid var(--borda);
+    border-radius: 11px;
+    margin-bottom: 8px;
+    overflow: hidden;
+    box-shadow: var(--sombra);
+    transition: .18s;
+  }
+  .referencia:hover { border-color: var(--borda-forte); }
+  .ref-cabeca {
+    display: grid; grid-template-columns: auto 1fr auto auto;
+    align-items: center; gap: 13px;
+    padding: 12px 15px;
+    cursor: pointer;
+  }
+  .selo {
+    display: inline-flex; align-items: center; gap: 5px;
+    font: 700 9.5px/1 system-ui, sans-serif;
+    letter-spacing: .6px;
+    padding: 5px 8px;
+    border-radius: 6px;
+    white-space: nowrap;
+  }
+  .selo svg { width: 11px; height: 11px; }
+  .selo-oficial { background: var(--oficial-fundo); color: var(--oficial); }
+  .selo-casa { background: var(--casa-fundo); color: var(--casa); }
+  .ref-texto { min-width: 0; }
+  .ref-titulo { font-weight: 600; font-size: 16px; }
+  .ref-local { font: 12.5px/1.4 system-ui, sans-serif; color: var(--texto-fraco); margin-top: 1px; }
+  .medidor { display: flex; align-items: center; gap: 8px; }
+  .barra { width: 48px; height: 5px; background: var(--borda); border-radius: 3px; overflow: hidden; }
+  .barra i { display: block; height: 100%; background: var(--marca); border-radius: 3px; }
+  .percentual { font: 700 11.5px/1 system-ui, sans-serif; color: var(--texto-fraco); width: 30px; text-align: right; }
+  .seta { color: var(--texto-fraco); transition: transform .2s; display: grid; }
+  .seta svg { width: 15px; height: 15px; }
+  .referencia.aberta .seta { transform: rotate(180deg); }
+  .ref-corpo {
+    display: none;
+    padding: 14px 15px;
+    border-top: 1px solid var(--borda);
+    background: var(--realce);
+    font-size: 15px;
+    color: var(--texto-medio);
+    white-space: pre-wrap;
+    max-height: 250px;
+    overflow-y: auto;
+  }
+  .referencia.aberta .ref-corpo { display: block; }
+
+  /* ---------- rodape ---------- */
+  footer {
+    background: var(--superficie);
+    border-top: 1px solid var(--borda-forte);
+    box-shadow: 0 -2px 14px rgba(0,0,0,.06);
+    padding: 15px 0;
+    flex-shrink: 0;
+  }
+  .barra-envio { display: flex; gap: 9px; }
+  .campo-envolto { flex: 1; position: relative; display: flex; align-items: center; }
+  .campo-envolto svg {
+    position: absolute; left: 14px;
+    width: 17px; height: 17px;
+    color: var(--texto-fraco);
+    pointer-events: none;
+  }
+  input[type=text] {
+    width: 100%;
+    background: var(--superficie-2);
+    border: 1px solid var(--borda-forte);
+    color: var(--texto);
+    padding: 13px 15px 13px 41px;
+    border-radius: 10px;
+    font: inherit; font-size: 16px;
+  }
+  input[type=text]:focus {
+    outline: none;
+    border-color: var(--marca);
+    background: var(--realce);
+  }
+  /* seletor de origem (substitui o select nativo, que nao aceita estilo na lista) */
+  .seletor { position: relative; flex-shrink: 0; }
+  .seletor-botao {
+    display: flex; align-items: center; gap: 9px;
+    background: var(--superficie-2);
+    border: 1px solid var(--borda-forte);
+    color: var(--texto-medio);
+    padding: 13px 13px;
+    border-radius: 10px;
+    font: 13px system-ui, sans-serif;
+    cursor: pointer;
+    white-space: nowrap;
+    transition: .18s;
+  }
+  .seletor-botao:hover { border-color: var(--marca); color: var(--marca); }
+  .seletor-botao svg { width: 14px; height: 14px; transition: transform .2s; }
+  .seletor.aberto .seletor-botao { border-color: var(--marca); color: var(--marca); }
+  .seletor.aberto .seletor-botao svg { transform: rotate(180deg); }
+
+  .seletor-lista {
+    display: none;
+    position: absolute;
+    bottom: calc(100% + 8px);
+    right: 0;
+    min-width: 210px;
+    background: var(--superficie);
+    border: 1px solid var(--borda-forte);
+    border-radius: 12px;
+    box-shadow: var(--sombra-forte);
+    padding: 6px;
+    z-index: 20;
+  }
+  .seletor.aberto .seletor-lista { display: block; }
+  .seletor-lista button {
+    display: flex; align-items: center; gap: 9px;
+    width: 100%;
+    background: none;
+    border: none;
+    border-radius: 8px;
+    padding: 10px 11px;
+    font: 13.5px system-ui, sans-serif;
+    color: var(--texto-medio);
+    cursor: pointer;
+    text-align: left;
+  }
+  .seletor-lista button:hover { background: var(--superficie-2); color: var(--texto); }
+  .seletor-lista button[aria-selected="true"] { color: var(--marca); font-weight: 600; }
+  .seletor-lista button svg { width: 14px; height: 14px; opacity: 0; flex-shrink: 0; }
+  .seletor-lista button[aria-selected="true"] svg { opacity: 1; }
+  #enviar {
+    display: inline-flex; align-items: center; gap: 8px;
+    background: var(--marca-solida);
+    color: var(--marca-contraste);
+    border: none;
+    padding: 13px 22px;
+    border-radius: 10px;
+    font: 700 14px/1 system-ui, sans-serif;
+    letter-spacing: .4px;
+    cursor: pointer;
+    box-shadow: var(--sombra);
+    transition: .18s;
+  }
+  #enviar svg { width: 16px; height: 16px; }
+  #enviar:hover { background: var(--marca-solida-hover); transform: translateY(-1px); box-shadow: var(--sombra-forte); }
+  #enviar:disabled { opacity: .5; cursor: default; transform: none; }
+
+  .carregando {
+    display: flex; align-items: center; gap: 10px;
+    color: var(--texto-fraco); font-style: italic;
+  }
+  .ponto { animation: pulsar 1.4s infinite; }
+  .ponto:nth-child(2) { animation-delay: .2s; }
+  .ponto:nth-child(3) { animation-delay: .4s; }
+  @keyframes pulsar { 0%,60%,100% { opacity:.25 } 30% { opacity:1 } }
+
+  @media (max-width: 720px) {
+    .folha { padding: 0 18px; }
+    .grade-sugestoes { grid-template-columns: 1fr; }
+    .corpus { display: none; }
+    .titulos h1 { font-size: 21px; }
+  }
+</style>
+</head>
+<body>
+
+<svg style="display:none">
+  <symbol id="i-marca" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linejoin="round">
+    <path d="M12 2.4 4 5.6v6.2c0 4.8 3.3 8.3 8 9.8 4.7-1.5 8-5 8-9.8V5.6z"/>
+    <path d="M12 8.2 16.2 15.4H7.8z"/>
+  </symbol>
+  <symbol id="i-lua" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round">
+    <path d="M21 12.8A9 9 0 1 1 11.2 3a7 7 0 0 0 9.8 9.8z"/>
+  </symbol>
+  <symbol id="i-sol" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round">
+    <circle cx="12" cy="12" r="4.2"/>
+    <path d="M12 2v2.4M12 19.6V22M4.2 4.2l1.7 1.7M18.1 18.1l1.7 1.7M2 12h2.4M19.6 12H22M4.2 19.8l1.7-1.7M18.1 5.9l1.7-1.7"/>
+  </symbol>
+  <symbol id="i-livro" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linejoin="round">
+    <path d="M4 4.5A2.5 2.5 0 0 1 6.5 2H20v17H6.5A2.5 2.5 0 0 0 4 21.5z"/><path d="M4 17.5h16"/>
+  </symbol>
+  <symbol id="i-casa" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linejoin="round">
+    <path d="M3 10.5 12 3l9 7.5"/><path d="M5.5 9.5V21h13V9.5"/>
+  </symbol>
+  <symbol id="i-pergunta" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round">
+    <circle cx="12" cy="12" r="9.2"/><path d="M9.3 9.2a2.8 2.8 0 1 1 3.5 2.7v1.8"/><path d="M12.8 17h.01"/>
+  </symbol>
+  <symbol id="i-busca" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round">
+    <circle cx="10.5" cy="10.5" r="7"/><path d="m20 20-4.5-4.5"/>
+  </symbol>
+  <symbol id="i-seta" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+    <path d="m6 9 6 6 6-6"/>
+  </symbol>
+  <symbol id="i-check" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round">
+    <path d="m4.5 12.5 5 5 10-11"/>
+  </symbol>
+  <symbol id="i-filtro" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round">
+    <path d="M3 5h18l-7 8v6l-4 2v-8z"/>
+  </symbol>
+  <symbol id="i-enviar" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round">
+    <path d="M21 3 3 10.5l7 3 3 7z"/><path d="M21 3 10 13.5"/>
+  </symbol>
+  <symbol id="i-balanca" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round">
+    <path d="M12 3v18M7 21h10M3 8h18M6 8l-3 6h6zM18 8l-3 6h6z"/>
+  </symbol>
+  <symbol id="i-verificado" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+    <circle cx="12" cy="12" r="9.2"/><path d="m7.8 12.3 2.9 2.9 5.5-6.2"/>
+  </symbol>
+</svg>
+
+<header><div class="folha masthead">
+  <svg class="brasao"><use href="#i-marca"/></svg>
+  <div class="titulos">
+    <h1>Medieva<em>IA</em></h1>
+    <p>regras de D&amp;D, com a fonte sempre &agrave; vista</p>
+  </div>
+  <div class="direita-header">
+    <div class="corpus" id="corpus">consultando&hellip;</div>
+    <button class="icone-botao" id="tema" title="Alternar tema" aria-label="Alternar tema">
+      <svg class="lua"><use href="#i-lua"/></svg>
+      <svg class="sol"><use href="#i-sol"/></svg>
+    </button>
+  </div>
+</div></header>
+
+<main><div class="folha fluxo inicial" id="fluxo">
+  <div class="abertura" id="abertura">
+    <div class="filete"></div>
+    <h2>Consulte as regras</h2>
+    <p>Toda resposta indica os trechos que a fundamentaram, distinguindo
+       o que &eacute; regra oficial do SRD do que &eacute; regra da casa.</p>
+    <div style="margin-top:28px">
+      <div class="rotulo">Comece por aqui</div>
+      <div class="grade-sugestoes">
+        <button class="sugestao"><svg><use href="#i-pergunta"/></svg>Como funciona o ataque furtivo do ladino?</button>
+        <button class="sugestao"><svg><use href="#i-pergunta"/></svg>Como funciona um acerto cr&iacute;tico?</button>
+        <button class="sugestao"><svg><use href="#i-pergunta"/></svg>O que acontece ao chegar a 0 pontos de vida?</button>
+        <button class="sugestao"><svg><use href="#i-pergunta"/></svg>Quanto tempo dura um descanso curto?</button>
+      </div>
+    </div>
+  </div>
+</div></main>
+
+<footer><div class="folha barra-envio">
+  <div class="campo-envolto">
+    <svg><use href="#i-busca"/></svg>
+    <input type="text" id="pergunta" placeholder="Digite sua d&uacute;vida sobre as regras&hellip;" autocomplete="off">
+  </div>
+  <div class="seletor" id="origem">
+    <button class="seletor-botao" id="origem-botao" aria-haspopup="listbox" aria-expanded="false">
+      <svg><use href="#i-filtro"/></svg>
+      <span id="origem-rotulo">Todas as origens</span>
+      <svg><use href="#i-seta"/></svg>
+    </button>
+    <div class="seletor-lista" id="origem-lista" role="listbox" aria-label="Filtrar por origem">
+      <button role="option" data-valor="" aria-selected="true"><svg><use href="#i-check"/></svg>Todas as origens</button>
+      <button role="option" data-valor="srd" aria-selected="false"><svg><use href="#i-check"/></svg>Somente oficial (SRD)</button>
+      <button role="option" data-valor="homebrew" aria-selected="false"><svg><use href="#i-check"/></svg>Somente regras da casa</button>
+    </div>
+  </div>
+  <button id="enviar"><svg><use href="#i-enviar"/></svg>Perguntar</button>
+</div></footer>
+
+<script>
+const fluxo = document.getElementById('fluxo');
+const campo = document.getElementById('pergunta');
+const botao = document.getElementById('enviar');
+const corpus = document.getElementById('corpus');
+const raiz = document.documentElement;
+
+/* ----- seletor de origem ----- */
+const seletor = document.getElementById('origem');
+const seletorBotao = document.getElementById('origem-botao');
+const seletorRotulo = document.getElementById('origem-rotulo');
+let origemSelecionada = '';
+
+seletorBotao.addEventListener('click', evento => {
+  evento.stopPropagation();
+  const abrindo = !seletor.classList.contains('aberto');
+  seletor.classList.toggle('aberto', abrindo);
+  seletorBotao.setAttribute('aria-expanded', String(abrindo));
+});
+
+document.querySelectorAll('#origem-lista button').forEach(opcao => {
+  opcao.addEventListener('click', () => {
+    origemSelecionada = opcao.dataset.valor;
+    seletorRotulo.textContent = opcao.textContent.trim();
+    document.querySelectorAll('#origem-lista button').forEach(outra =>
+      outra.setAttribute('aria-selected', String(outra === opcao)));
+    seletor.classList.remove('aberto');
+    seletorBotao.setAttribute('aria-expanded', 'false');
+  });
+});
+
+document.addEventListener('click', () => {
+  seletor.classList.remove('aberto');
+  seletorBotao.setAttribute('aria-expanded', 'false');
+});
+document.addEventListener('keydown', evento => {
+  if (evento.key === 'Escape') {
+    seletor.classList.remove('aberto');
+    seletorBotao.setAttribute('aria-expanded', 'false');
+  }
+});
+
+/* ----- tema ----- */
+try {
+  const salvo = localStorage.getItem('medievaia-tema');
+  if (salvo) raiz.dataset.tema = salvo;
+  else if (matchMedia('(prefers-color-scheme: dark)').matches) raiz.dataset.tema = 'escuro';
+} catch (e) {}
+
+document.getElementById('tema').addEventListener('click', () => {
+  raiz.dataset.tema = raiz.dataset.tema === 'escuro' ? 'claro' : 'escuro';
+  try { localStorage.setItem('medievaia-tema', raiz.dataset.tema); } catch (e) {}
+});
+
+/* ----- utilidades ----- */
+function no(tag, classe, texto) {
+  const elemento = document.createElement(tag);
+  if (classe) elemento.className = classe;
+  if (texto !== undefined) elemento.textContent = texto;
+  return elemento;
+}
+function icone(id, dentro) {
+  const svg = document.createElementNS('http://www.w3.org/2000/svg', 'svg');
+  const uso = document.createElementNS('http://www.w3.org/2000/svg', 'use');
+  uso.setAttribute('href', '#' + id);
+  svg.appendChild(uso);
+  if (dentro) dentro.appendChild(svg);
+  return svg;
+}
+
+async function carregarCorpus() {
+  try {
+    const resposta = await fetch('/api/status');
+    const dados = await resposta.json();
+    if (!resposta.ok) throw new Error(dados.detail);
+    const total = dados.sources.reduce((s, f) => s + f.chunks, 0);
+    if (!total) { corpus.innerHTML = '<span class="falha">base vazia</span>'; return; }
+    const daCasa = dados.sources.filter(f => f.source_type === 'homebrew')
+                                .reduce((s, f) => s + f.chunks, 0);
+    corpus.innerHTML = `<b>${total.toLocaleString('pt-BR')}</b> trechos`
+      + (daCasa ? `<br><b>${daCasa}</b> da casa` : '');
+  } catch (erro) {
+    corpus.innerHTML = '<span class="falha">base indispon&iacute;vel</span>';
+  }
+}
+
+function montarReferencia(trecho) {
+  const caixa = no('div', 'referencia');
+  const cabeca = no('div', 'ref-cabeca');
+  const oficial = trecho.source_type === 'srd';
+
+  const selo = no('span', 'selo ' + (oficial ? 'selo-oficial' : 'selo-casa'));
+  icone(oficial ? 'i-livro' : 'i-casa', selo);
+  selo.appendChild(document.createTextNode(oficial ? 'OFICIAL' : 'DA CASA'));
+  cabeca.appendChild(selo);
+
+  const texto = no('div', 'ref-texto');
+  texto.appendChild(no('div', 'ref-titulo', trecho.title));
+  texto.appendChild(no('div', 'ref-local',
+    [trecho.chapter, trecho.section].filter(Boolean).join(' › ')
+    + (trecho.page ? ' · página ' + trecho.page : '')));
+  cabeca.appendChild(texto);
+
+  const similaridade = Math.max(0, Math.min(1, 1 - trecho.distance));
+  const medidor = no('div', 'medidor');
+  medidor.title = 'Similaridade de cosseno (distância ' + trecho.distance.toFixed(4) + ')';
+  const barra = no('div', 'barra');
+  const cheio = document.createElement('i');
+  cheio.style.width = (similaridade * 100).toFixed(0) + '%';
+  barra.appendChild(cheio);
+  medidor.appendChild(barra);
+  medidor.appendChild(no('span', 'percentual', (similaridade * 100).toFixed(0) + '%'));
+  cabeca.appendChild(medidor);
+
+  const seta = no('span', 'seta');
+  icone('i-seta', seta);
+  cabeca.appendChild(seta);
+
+  caixa.appendChild(cabeca);
+  caixa.appendChild(no('div', 'ref-corpo', trecho.content));
+  cabeca.addEventListener('click', () => caixa.classList.toggle('aberta'));
+  return caixa;
+}
+
+function montarResposta(rotulo, classeFita, iconeId, texto, ehErro) {
+  const cartao = no('div', 'cartao');
+  const fita = no('div', 'fita ' + classeFita);
+  icone(iconeId, fita);
+  fita.appendChild(document.createTextNode(rotulo));
+  cartao.appendChild(fita);
+  cartao.appendChild(no('div', 'texto-resposta' + (ehErro ? ' erro' : ''), texto));
+  return cartao;
+}
+
+function rolar() {
+  const area = fluxo.parentElement;
+  area.scrollTop = area.scrollHeight;
+}
+
+async function compararSemRag(texto, origemBotao) {
+  origemBotao.disabled = true;
+  origemBotao.lastChild.textContent = 'consultando…';
+  try {
+    const resposta = await fetch('/api/baseline', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ question: texto })
+    });
+    const dados = await resposta.json();
+    origemBotao.parentElement.replaceWith(resposta.ok
+      ? montarResposta('Sem consultar a base · conhecimento geral do modelo',
+                       'fita-sem', 'i-balanca', dados.answer)
+      : montarResposta('Falha', 'fita-erro', 'i-balanca', dados.detail || 'erro', true));
+    rolar();
+  } catch (erro) {
+    origemBotao.disabled = false;
+    origemBotao.lastChild.textContent = 'Comparar sem consultar a base';
+  }
+}
+
+async function perguntar(texto) {
+  const abertura = document.getElementById('abertura');
+  if (abertura) { abertura.remove(); fluxo.classList.remove('inicial'); }
+
+  const titulo = no('div', 'pergunta');
+  icone('i-pergunta', titulo);
+  titulo.appendChild(document.createTextNode(texto));
+  fluxo.appendChild(titulo);
+  const mostrarPergunta = () => titulo.scrollIntoView({ block: 'start', behavior: 'smooth' });
+
+  const espera = no('div', 'carregando');
+  espera.innerHTML = 'recuperando trechos e redigindo a resposta'
+    + '<span class="ponto">.</span><span class="ponto">.</span><span class="ponto">.</span>';
+  fluxo.appendChild(espera);
+  rolar();
+
+  botao.disabled = true;
+  campo.value = '';
+
+  try {
+    const resposta = await fetch('/api/ask', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ question: texto, source: origemSelecionada || null })
+    });
+    const dados = await resposta.json();
+    espera.remove();
+
+    if (!resposta.ok) {
+      const detalhe = Array.isArray(dados.detail)
+        ? dados.detail.map(d => d.msg).join('; ')
+        : (dados.detail || 'falha na consulta');
+      fluxo.appendChild(montarResposta('Não foi possível responder',
+        'fita-erro', 'i-verificado', detalhe, true));
+      return;
+    }
+
+    fluxo.appendChild(montarResposta('Resposta fundamentada na base',
+      'fita-rag', 'i-verificado', dados.answer));
+
+    if (dados.passages.length) {
+      const bloco = no('div');
+      bloco.appendChild(no('div', 'rotulo', 'Trechos consultados'));
+      dados.passages.forEach(t => bloco.appendChild(montarReferencia(t)));
+      fluxo.appendChild(bloco);
+    }
+
+    const acoes = no('div');
+    const comparar = no('button', 'botao-comparar');
+    icone('i-balanca', comparar);
+    comparar.appendChild(document.createTextNode('Comparar sem consultar a base'));
+    comparar.addEventListener('click', () => compararSemRag(texto, comparar));
+    acoes.appendChild(comparar);
+    fluxo.appendChild(acoes);
+  } catch (erro) {
+    espera.remove();
+    fluxo.appendChild(montarResposta('Falha de conexão', 'fita-erro', 'i-verificado', erro.message, true));
+  } finally {
+    botao.disabled = false;
+    campo.focus();
+    mostrarPergunta();
+  }
+}
+
+function enviar() {
+  const texto = campo.value.trim();
+  if (texto.length >= 3) perguntar(texto);
+}
+
+botao.addEventListener('click', enviar);
+campo.addEventListener('keydown', e => { if (e.key === 'Enter') enviar(); });
+document.querySelectorAll('.sugestao').forEach(b =>
+  b.addEventListener('click', () => perguntar(b.textContent.trim())));
+
+carregarCorpus();
+campo.focus();
+</script>
+</body>
+</html>
